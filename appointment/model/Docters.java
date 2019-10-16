@@ -2,6 +2,9 @@ package com.ray.oops.appointment.model;
 
 public class Docters {
 private long id;
+private String name;
+private String spcl;
+private String avail;
 public long getId() {
 	return id;
 }
@@ -23,11 +26,12 @@ public void setSpcl(String spcl) {
 public String getAvail() {
 	return avail;
 }
-public void setAvail(String avail) {
+public void setAvail(String avail) { 
 	this.avail = avail;
 }
-private String name;
-private String spcl;
-private String avail;
+
+public String toStrong() {
+	return (" "+getId()+ " " +getName()+"  " +getSpcl()+"  "+ getAvail());
+}
 
 }

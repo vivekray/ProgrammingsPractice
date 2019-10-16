@@ -1,15 +1,17 @@
 package com.ray.oops.appointment.control;
 
+import com.ray.oops.appointment.repo.Reposetory;
 import com.ray.oops.appointment.services.ServiceImplement;
-import com.ray.oops.appointment.util.Utility;
 import com.ray.oops.appointment.view.Report;
 import com.ray.utilty.Util;
 
 public class Menu {
 	private ServiceImplement object=null;
+	private Reposetory repo=null;
 
 	public Menu() {
 		object = new ServiceImplement();
+		Reposetory repo=new Reposetory ();
 	}
 
 	public  void Docters() {
@@ -19,15 +21,14 @@ public class Menu {
 		case 1:
 			object.addDocter();
 			break;
-		case 2://object.updateDocter();
+		case 2:object.updateDocter();
 			break;
 			
-		case 3:
-			Report.printDocter(Utility.readDocter());
+		case 3:Report.printDocter(repo.readDocter());
 			break;
 		case 4:object.sortDocter();
 		break;
-		case 5://object.searchDocter
+		case 5:object.searchDocter();
 			break;
 		default:
 			System.out.println("Invalid options \nTry Again");
@@ -41,10 +42,9 @@ public class Menu {
 		case 1:
 			object.addPatient();
 			break;
-		case 2:
-			//object.updatePatient();
+		case 2:object.updatePatient();
 			break;
-		case 3:Report.printPatients(Utility.readPatient());
+		case 3:Report.printPatients(repo.readPatient());
 		break;
 			
 		case 4:object.sortPatient();

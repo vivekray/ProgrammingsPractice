@@ -12,11 +12,16 @@ import com.ray.algorithm.Util;
 import com.ray.oops.appointment.model.Appointment;
 import com.ray.oops.appointment.model.Docters;
 import com.ray.oops.appointment.model.Patients;
+import com.ray.oops.appointment.repo.Reposetory;
 import com.ray.oops.appointment.util.Utility;
 import com.ray.oops.appointment.view.Report;
 
 public class ServiceImplement implements Service {
-
+	private Reposetory repo;
+	public ServiceImplement(){
+		repo=new Reposetory();
+	}
+	
 	public void addDocter() {
 
 		Docters docter = new Docters();
@@ -34,14 +39,14 @@ public class ServiceImplement implements Service {
 		System.out.println("Availiblity");
 		String avil = Util.next();
 		docter.setAvail(avil);
-		Utility.writeDocter(docter);
+		repo.writeDocter(docter);
 
 	}
 
 	@Override
 	public void deleteDocter() {
-		// Taking data in list form to delete
-		LinkedList<Docters> docters = (LinkedList<Docters>) Utility.readDocter();
+		// Taking data in list form to delet
+		LinkedList<Docters> docters = (LinkedList<Docters>) repo.readDocter();
 		System.out.println("Enter Id For Deleteion");
 		long id = Util.nextLong();
 		for (int i = 0; i < docters.size(); i++) {
@@ -51,7 +56,7 @@ public class ServiceImplement implements Service {
 			}
 		}
 		// converting Updating data in JSON and and save in file
-		Utility.save("Docters.json", (JSONArray) Utility.convertDocter(docters));
+		repo.save("Docters.json", (JSONArray) Utility.convertDocter(docters));
 
 	}
 
@@ -78,14 +83,14 @@ public class ServiceImplement implements Service {
 		patient.setM_number(number);
 
 		// Writing in json file
-		Utility.writePatient(patient);
+		repo.writePatient(patient);
 		return patient;
 	}
 
 	@Override
 	public void deletePatient() {
 		// Taking data to delete
-		List<Patients> patient = Utility.readPatient();
+		List<Patients> patient = repo.readPatient();
 		System.out.println("Enter Id For Deleteion");
 		long id = Util.nextLong();
 		for (int i = 0; i < patient.size(); i++) {
@@ -94,40 +99,19 @@ public class ServiceImplement implements Service {
 			}
 		}
 		// Converting Updated data in JSON form and save in file
-		Utility.save("Patients.json", (JSONArray) Utility.convertPatient(patient));
+		repo.save("Patients.json", (JSONArray) Utility.convertPatient(patient));
 
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void meetingSave(Appointment app) {
-		// collection of appointment
+
 	
-		JSONArray appoinments = Utility.convertAppoinment(Utility.readAppointment());
-
-		// for taking one object of appointment
-		JSONObject appoinment = new JSONObject();
-		appoinment.put("Pid", app.getPatients().getId());
-		appoinment.put("Pname", app.getPatients().getName());
-		appoinment.put("Page", app.getPatients().getAge());
-		appoinment.put("Pnumber", app.getPatients().getM_number());
-		appoinment.put("Did", app.getDocter().getId());
-		appoinment.put("Ddate", app.getDate());
-		appoinment.put("Davail", app.getDocter().getAvail());
-		appoinments.add(appoinment);
-		// save appointments with new appointment
-		Utility.save("Appoinments.json", appoinments);
-
-		System.out.println("Appointment Submit SuccessFully!");
-
-	}
 
 //  find by Docter by ID
 	public Docters passDocters(long id) {
-		LinkedList<Docters> docters = (LinkedList<Docters>) Utility.readDocter();
+		LinkedList<Docters> docters = (LinkedList<Docters>) repo.readDocter();
 		Docters docter = null;
 		for (int i = 0; i < docters.size(); i++) {
-			
+
 			if (id == docters.get(i).getId()) {
 				docter = new Docters();
 				docter.setId(docters.get(i).getId());
@@ -147,7 +131,7 @@ public class ServiceImplement implements Service {
 		Patients patient = addPatient();
 		appointment.setPatients(patient.getId(), patient.getName(), patient.getAge(), patient.getM_number());
 //Displaying Docter List
-		Report.printDocter(Utility.readDocter());
+		Report.printDocter(repo.readDocter());
 		System.out.println("Select Docters ID");
 		long id = Util.nextLong();
 		int flag = 0;
@@ -177,126 +161,205 @@ public class ServiceImplement implements Service {
 		String date = Util.next();
 		appointment.setDate(date);
 		// to save appointment
-		meetingSave(appointment);
+		repo.meetingSave(appointment);
 
 	}
 
 	@Override
 	public void sortDocter() {
-		
 		System.out.println("Enter Option For Sort");
 		System.out.println("1:Id\t2:Name\t3:Speciality\t4:Availbility");
-		int option=Util.nextInt();
-		
-		LinkedList<Docters> docters=(LinkedList<Docters>) Utility.readDocter();
-		
-		for(int i=0;i<docters.size()-1;i++) {
-			for(int j=i+1;j<docters.size();j++) {
-				
-				switch(option) {
-				case 1:   if(docters.get(i).getId()>docters.get(j).getId())	
-					   Collections.swap(docters, i, j);
-				break;
-				case 2: if(docters.get(i).getName().compareToIgnoreCase(docters.get(j).getName())>0)	
-					   Collections.swap(docters, i, j);
-				break;
-				case 3: if(docters.get(i).getSpcl().compareToIgnoreCase(docters.get(j).getSpcl())>0)	
-					   Collections.swap(docters, i, j);
-				break;
-				case 4:if(docters.get(i).getAvail().compareToIgnoreCase(docters.get(j).getAvail())>0)	
-					   Collections.swap(docters, i, j);
-				break;
-					  
-				
-				
+		int option = Util.nextInt();
+
+		LinkedList<Docters> docters = (LinkedList<Docters>) repo.readDocter();
+
+		for (int i = 0; i < docters.size() - 1; i++) {
+			for (int j = i + 1; j < docters.size(); j++) {
+
+				switch (option) {
+				case 1:
+					if (docters.get(i).getId() > docters.get(j).getId())
+						Collections.swap(docters, i, j);
+					break;
+				case 2:
+					if (docters.get(i).getName().compareToIgnoreCase(docters.get(j).getName()) > 0)
+						Collections.swap(docters, i, j);
+					break;
+				case 3:
+					if (docters.get(i).getSpcl().compareToIgnoreCase(docters.get(j).getSpcl()) > 0)
+						Collections.swap(docters, i, j);
+					break;
+				case 4:
+					if (docters.get(i).getAvail().compareToIgnoreCase(docters.get(j).getAvail()) > 0)
+						Collections.swap(docters, i, j);
+					break;
+
+				}
+
 			}
-			
-		}
 		}
 		Report.printDocter(docters);
-		
+
 	}
 
 	@Override
 	public void sortPatient() {
+		
 		System.out.println("Enter Option For Sort");
 		System.out.println("1:Id\t2:Name\t3:Age\t4:Number");
-		int option=Util.nextInt();
-		LinkedList<Patients> patients=(LinkedList<Patients>) Utility.readPatient();
-		for(int i=0;i<patients.size()-1;i++) {
-			for(int j=i+1;j<patients.size();j++) {
-				switch(option) {
+		int option = Util.nextInt();
+		LinkedList<Patients> patients = (LinkedList<Patients>) repo.readPatient();
+		for (int i = 0; i < patients.size() - 1; i++) {
+			for (int j = i + 1; j < patients.size(); j++) {
+				switch (option) {
 				case 1:
-					  if(patients.get(i).getId()>patients.get(j).getId())	
-					   Collections.swap(patients, i, j);
-					  break;
+					if (patients.get(i).getId() > patients.get(j).getId())
+						Collections.swap(patients, i, j);
+					break;
 				case 2:
-					  if(patients.get(i).getName().compareToIgnoreCase(patients.get(j).getName())>0)	
-					   Collections.swap(patients, i, j);
-					  break;
+					if (patients.get(i).getName().compareToIgnoreCase(patients.get(j).getName()) > 0)
+						Collections.swap(patients, i, j);
+					break;
 				case 3:
-					  if(patients.get(i).getAge()>patients.get(j).getAge())	
-					   Collections.swap(patients, i, j);
-					  break;
+					if (patients.get(i).getAge() > patients.get(j).getAge())
+						Collections.swap(patients, i, j);
+					break;
 				case 4:
-					  if(patients.get(i).getM_number()>patients.get(j).getM_number())	
-					   Collections.swap(patients, i, j);
-					  break;
-				}  
-				
-				
+					if (patients.get(i).getM_number() > patients.get(j).getM_number())
+						Collections.swap(patients, i, j);
+					break;
+				}
+
 			}
-			
+
 		}
 		Report.printPatients(patients);
-		
-		
+
 	}
 
 	@Override
 	public void updateDocter() {
-		System.out.println("1:Name\t2:Spaciality\t3:Avaibility");
-		LinkedList<Docters> docters=(LinkedList<Docters>) Utility.readDocter();
 		
-		
-		
+		List<Docters> docters = repo.readDocter();
+		System.out.println("Enter id For update");
+		int id = Util.nextInt();
+		int option = Util.nextInt();
+		System.out.println("1:Name\t2:Speciality\t3:Availbility");
+		int options = Util.nextInt();
+		System.out.println("Enter new Value to update");
+		String value = Util.next();
+		switch (options) {
+		case 1:
+			for (int i = 0; i < docters.size(); i++) {
+				if (docters.get(i).getId() == id) {
+					docters.get(i).setName(value);
+				}
+			}
+			break;
+
+		case 2:
+			for (int i = 0; i < docters.size(); i++) {
+				if (docters.get(i).getId() == id) {
+					docters.get(i).setSpcl(value);
+				}
+			}
+			break;
+		case 3:
+			for (int i = 0; i < docters.size(); i++) {
+				if (docters.get(i).getId() == id) {
+					docters.get(i).setAvail(value);
+				}
+			}
+			break;
+
+		}
+          repo.save("Docters.json", Utility.convertDocter(docters));
+          
 	}
 
 	@Override
 	public void updatePatient() {
-		// TODO Auto-generated method stub
-		
+	
+		List<Patients> patients = repo.readPatient();
+		System.out.println("Enter id For update");
+		int id = Util.nextInt();
+		int option = Util.nextInt();
+		System.out.println("1:Name\t2:Age\t3:Number");
+		int options = Util.nextInt();
+		System.out.println("Enter new Value to update");
+		String value = Util.next();
+		switch (options) {
+		case 1:
+			for (int i = 0; i < patients.size(); i++) {
+				if (patients.get(i).getId() == id) {
+					patients.get(i).setName(value);
+				}
+			}
+			break;
+
+		case 2:
+			long age = Long.parseLong(value);
+			for (int i = 0; i < patients.size(); i++) {
+				if (patients.get(i).getId() == id) {
+					patients.get(i).setAge(age);
+				}
+			}
+			break;
+		case 3:
+			long number = Long.parseLong(value);
+			for (int i = 0; i < patients.size(); i++) {
+				if (patients.get(i).getId() == id) {
+					patients.get(i).setM_number(number);
+				}
+			}
+			break;
+
+		}
+          repo.save("Patients.json", Utility.convertPatient(patients));
+          
 	}
 
 	@Override
 	public void deleteAppointment() {
+		
 		Report.printAppointment();
-		List<Appointment> appointments=Utility.readAppointment();
+		List<Appointment> appointments = Utility.readAppointment();
 		System.out.println("Enter id for delete record");
-		long id=Util.nextLong();
-		
-		//Java 8 API Stream Apply
-		Predicate<Appointment> remove =p -> (p.getPatients().getId()!= id); 
-		appointments=(List<Appointment>) appointments.stream().filter(remove).collect(Collectors.toList());
-	
-		// Java 7	
-	/*for(int i=0;i<appointments.size();i++) {
-	
-			if(appointments.get(i).getPatients().getId()==id) {
-				appointments.remove(appointments.get(i));
-				System.out.println("Deleted");
-			}
-		}*/
-		
-		Utility.save("Appoinments.json",Utility.convertAppoinment(appointments));
-	
+		long id = Util.nextLong();
+
+		// Java 8 API Stream Apply
+		Predicate<Appointment> remove = p -> (p.getPatients().getId() != id);
+		appointments = (List<Appointment>) appointments.stream().filter(remove).collect(Collectors.toList());
+
+		// Java 7
+		/*
+		 * for(int i=0;i<appointments.size();i++) {
+		 * 
+		 * if(appointments.get(i).getPatients().getId()==id) {
+		 * appointments.remove(appointments.get(i)); System.out.println("Deleted"); } }
+		 */
+
+		repo.save("Appoinments.json", Utility.convertAppoinment(appointments));
+
 		Report.printAppointment();
 	}
 
 	@Override
 	public void updateAppointment() {
-		// TODO Auto-generated method stub
-		
+	
+
+	}
+
+	@Override
+	public void searchDocter() {
+		repo=new Reposetory ();
+		System.out.println("Entere Id for search");
+		long id=Util.nextLong();
+		List<Docters> docters=repo.readDocter();
+		//Predicate<Docters> search = p -> (p.getId()== id);
+		docters.stream().filter(p -> (p.getId()==id)).forEach(doc->{
+			System.out.println("Searched Records::in"+doc.toStrong());
+		});
 	}
 
 }
