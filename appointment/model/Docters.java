@@ -8,10 +8,8 @@ private String avail;
 privage String password;
 
 public String getPassword() {
-	return password;
-}
-public void setPassword() {
 	this.password = "password";
+	return password;
 }
 public long getId() {
 	return id;
