@@ -5,6 +5,14 @@ private long id;
 private String name;
 private String spcl;
 private String avail;
+privage String password;
+
+public String getPassword() {
+	return password;
+}
+public void setPassword() {
+	this.password = "password";
+}
 public long getId() {
 	return id;
 }
